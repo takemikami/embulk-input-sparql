@@ -1,0 +1,19 @@
+query: |
+  select ?s ?name ?birth ?position ?height ?url ?knows
+  where {
+    ?s <http://schema.org/name> ?name ;
+       <http://schema.org/birthDate> ?birth ;
+       <http://schema.org/position> ?position ;
+       <http://schema.org/height> ?height ;
+       <http://schema.org/url> ?url ;
+       <http://schema.org/knows> ?knows .
+    filter(?s = <http://example.com/something>)
+  }
+columns:
+  - { name: s, type: string }
+  - { name: name, type: string }
+  - { name: birth, type: timestamp }
+  - { name: position, type: long }
+  - { name: height, type: double }
+  - { name: url, type: string }
+  - { name: knows, type: string }

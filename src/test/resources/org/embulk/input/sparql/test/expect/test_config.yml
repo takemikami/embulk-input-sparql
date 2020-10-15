@@ -1,0 +1,10 @@
+query: |
+  select ?s ?p ?o
+  where {
+    ?s ?p ?o.
+    filter(?s = <http://example.com/something>)
+  }
+columns:
+  - { name: s, type: string }
+  - { name: p, type: string }
+  - { name: o, type: string }

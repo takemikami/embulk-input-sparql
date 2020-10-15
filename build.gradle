@@ -1,16 +1,17 @@
 plugins {
-    id "com.jfrog.bintray" version "1.1"
-    id "com.github.jruby-gradle.base" version "1.5.0"
-    id "java"
-    id "checkstyle"
+  id "com.jfrog.bintray" version "1.1"
+  id "com.github.jruby-gradle.base" version "1.5.0"
+  id "java"
+  id "checkstyle"
 }
 import com.github.jrubygradle.JRubyExec
+
 repositories {
-    mavenCentral()
-    jcenter()
+  mavenCentral()
+  jcenter()
 }
 configurations {
-    provided
+  provided
 }
 
 version = "0.1.0"
@@ -19,61 +20,70 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 dependencies {
-    compile  "org.embulk:embulk-core:0.9.23"
-    provided "org.embulk:embulk-core:0.9.23"
-    // compile "YOUR_JAR_DEPENDENCY_GROUP:YOUR_JAR_DEPENDENCY_MODULE:YOUR_JAR_DEPENDENCY_VERSION"
-    testCompile "junit:junit:4.+"
+  compile "org.embulk:embulk-core:0.9.23"
+  provided "org.embulk:embulk-core:0.9.23"
+
+  compile "org.apache.jena:jena-arq:3.16.0"
+
+  testCompile "junit:junit:4.+"
+  testCompile 'org.hamcrest:hamcrest-core:2.2'
+  testCompile "org.embulk:embulk-core:0.9.23"
+  testCompile "org.embulk:embulk-test:0.9.23"
+  testCompile "org.embulk:embulk-deps-buffer:0.9.23"
+  testCompile "org.embulk:embulk-deps-config:0.9.23"
+  testCompile 'org.embulk:embulk-standards:0.9.23'
+  testCompile 'org.apache.jena:jena-fuseki-main:3.16.0'
 }
 
 task classpath(type: Copy, dependsOn: ["jar"]) {
-    doFirst { file("classpath").deleteDir() }
-    from (configurations.runtime - configurations.provided + files(jar.archivePath))
-    into "classpath"
+  doFirst { file("classpath").deleteDir() }
+  from(configurations.runtime - configurations.provided + files(jar.archivePath))
+  into "classpath"
 }
 clean { delete "classpath" }
 
 checkstyle {
-    configFile = file("${project.rootDir}/config/checkstyle/checkstyle.xml")
-    toolVersion = '6.14.1'
+  configFile = file("${project.rootDir}/config/checkstyle/checkstyle.xml")
+  toolVersion = '6.14.1'
 }
 checkstyleMain {
-    configFile = file("${project.rootDir}/config/checkstyle/default.xml")
-    ignoreFailures = true
+  configFile = file("${project.rootDir}/config/checkstyle/default.xml")
 }
 checkstyleTest {
-    configFile = file("${project.rootDir}/config/checkstyle/default.xml")
-    ignoreFailures = true
+  configFile = file("${project.rootDir}/config/checkstyle/default.xml")
+  ignoreFailures = true
 }
 task checkstyle(type: Checkstyle) {
-    classpath = sourceSets.main.output + sourceSets.test.output
-    source = sourceSets.main.allJava + sourceSets.test.allJava
+  classpath = sourceSets.main.output + sourceSets.test.output
+  source = sourceSets.main.allJava + sourceSets.test.allJava
 }
 
 task gem(type: JRubyExec, dependsOn: ["gemspec", "classpath"]) {
-    jrubyArgs "-S"
-    script "gem"
-    scriptArgs "build", "${project.name}.gemspec"
-    doLast { ant.move(file: "${project.name}-${project.version}.gem", todir: "pkg") }
+  jrubyArgs "-S"
+  script "gem"
+  scriptArgs "build", "${project.name}.gemspec"
+  doLast { ant.move(file: "${project.name}-${project.version}.gem", todir: "pkg") }
 }
 
 task gemPush(type: JRubyExec, dependsOn: ["gem"]) {
-    jrubyArgs "-S"
-    script "gem"
-    scriptArgs "push", "pkg/${project.name}-${project.version}.gem"
+  jrubyArgs "-S"
+  script "gem"
+  scriptArgs "push", "pkg/${project.name}-${project.version}.gem"
 }
 
 task "package"(dependsOn: ["gemspec", "classpath"]) {
-    doLast {
-        println "> Build succeeded."
-        println "> You can run embulk with '-L ${file(".").absolutePath}' argument."
-    }
+  doLast {
+    println "> Build succeeded."
+    println "> You can run embulk with '-L ${file(".").absolutePath}' argument."
+  }
 }
 
 task gemspec {
-    ext.gemspecFile = file("${project.name}.gemspec")
-    inputs.file "build.gradle"
-    outputs.file gemspecFile
-    doLast { gemspecFile.write($/
+  ext.gemspecFile = file("${project.name}.gemspec")
+  inputs.file "build.gradle"
+  outputs.file gemspecFile
+  doLast {
+    gemspecFile.write($/
 Gem::Specification.new do |spec|
   spec.name          = "${project.name}"
   spec.version       = "${project.version}"
@@ -82,7 +92,7 @@ Gem::Specification.new do |spec|
   spec.description   = %[Loads records from Sparql.]
   spec.email         = ["takeshi.mikami@gmail.com"]
   spec.licenses      = ["MIT"]
-  # TODO set this: spec.homepage      = "https://github.com/takeshi.mikami/embulk-input-sparql"
+  spec.homepage      = "https://github.com/takemikami/embulk-input-sparql"
 
   spec.files         = `git ls-files`.split("\n") + Dir["classpath/*.jar"]
   spec.test_files    = spec.files.grep(%r"^(test|spec)/")
@@ -93,6 +103,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rake', ['~> 12.0']
 end
 /$)
-    }
+  }
 }
 clean { delete "${project.name}.gemspec" }

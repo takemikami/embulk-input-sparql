@@ -1,0 +1,7 @@
+http://example.com/something,http://schema.org/birthDate,2000-01-01
+http://example.com/something,http://schema.org/height,170.0
+http://example.com/something,http://schema.org/knows,http://example.com/anotherthing
+http://example.com/something,http://schema.org/name,familyName
+http://example.com/something,http://schema.org/position,1
+http://example.com/something,http://schema.org/url,http://example.com/something
+http://example.com/something,http://www.w3.org/1999/02/22-rdf-syntax-ns#type,http://schema.org/Person

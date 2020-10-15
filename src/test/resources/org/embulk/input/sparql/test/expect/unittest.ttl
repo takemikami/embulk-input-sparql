@@ -1,0 +1,14 @@
+@base <http://example.com/rdflint#> .
+@prefix schema: <http://schema.org/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<something> a schema:Person ;
+    schema:name "familyName" ;
+    schema:url <http://example.com/something> ;
+    schema:position 1 ;
+    schema:height 170.0 ;
+    schema:birthDate "2000-01-01"^^xsd:date ;
+    schema:knows <anotherthing>.
+
+<anotherthing> a schema:Person.
