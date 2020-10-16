@@ -155,7 +155,7 @@ public class SparqlInputPlugin
                 return literal.getInt();
             }
             else {
-                return Long.parseLong(literal.toString());
+                return Long.parseLong(literal.getLexicalForm());
             }
         }
         return Long.parseLong(solution.get(column).toString());
@@ -169,7 +169,7 @@ public class SparqlInputPlugin
                 return literal.getDouble();
             }
             else {
-                return Double.parseDouble(literal.toString());
+                return Double.parseDouble(literal.getLexicalForm());
             }
         }
         return Double.parseDouble(solution.get(column).toString());
